@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="CYBERSOC AI — Enterprise AI Security Operations Center">
+<title>CYBERSOC AI — SOC Operations Center</title>
+<style>
+:root{
+  --bg:#030712;--panel:#111827;--panel2:#0b1220;--line:#243047;
+  --text:#e8eef8;--muted:#8d9ab0;--blue:#42a9ea;--blue2:#1676b9;
+  --green:#45d49a;--yellow:#f4bf38;--red:#ff5b61;--purple:#a78bfa;
+  --shadow:0 12px 40px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.topbar{height:72px;border-bottom:1px solid #1b2537;background:#050914;display:flex;align-items:center;padding:0 28px;gap:28px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:13px;min-width:300px}
+.logo{width:42px;height:42px;border:1px solid #15527a;background:#081c2d;border-radius:10px;display:grid;place-items:center;color:#46b7ff;font-size:22px}
+.brand b{font-size:19px;letter-spacing:.2px}.brand b span{color:var(--blue)}
+.nav{display:flex;gap:5px;align-items:center;flex:1}
+.nav button{border:1px solid transparent;background:transparent;color:#9aa7bc;padding:11px 14px;border-radius:7px;font-size:14px}
+.nav button:hover,.nav button.active{background:#0b2034;border-color:#17476b;color:#4cb5fa}
+.profile{border:1px solid #26324a;background:#101827;color:#9ba9bf;border-radius:22px;padding:9px 14px;font-size:13px;white-space:nowrap}
+main{max-width:1440px;margin:auto;padding:30px 34px 60px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px}
+h1{font-size:27px;margin:0 0 4px}.sub{color:var(--muted);font-size:14px}
+.status{border:1px solid #14523e;background:#06251d;color:#56dca7;border-radius:20px;padding:9px 14px;font-size:13px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:8px;box-shadow:0 0 10px var(--green)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{background:linear-gradient(145deg,#111a2b,#0d1422);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.kpi{padding:20px}.kpi-top{display:flex;justify-content:space-between;color:#9aa8bd;font-size:12px;font-weight:700;letter-spacing:.4px}.kpi-icon{font-size:17px}.kpi-value{font-size:28px;font-weight:750;margin:9px 0}.good{color:var(--green)}.warn{color:var(--yellow)}.bad{color:var(--red)}.blue{color:var(--blue)}
+.kpi-note{font-size:12px;color:#45aeea}
+.section{margin-top:24px;padding:20px}.section-title{font-size:14px;font-weight:750;letter-spacing:1px;color:#bdc8d8;margin-bottom:16px}
+.event{display:flex;align-items:center;gap:14px;border:1px solid #1e2b40;background:#030914;border-radius:8px;padding:13px;margin:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.badge{border-radius:4px;padding:5px 8px;font-weight:800;font-size:11px;letter-spacing:.4px}.critical{color:#ff6b70;background:#29151a;border:1px solid #66313a}.high{color:#ffc52e;background:#2a2110;border:1px solid #5d4b1c}.medium{color:#49b9ff;background:#0a2538;border:1px solid #155b84}.low{color:#53dba3;background:#0b2a20;border:1px solid #1c644b}
+.event .time{margin-left:auto;color:#61708a;white-space:nowrap}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{background:transparent;border:1px solid transparent;color:#9ca9bc;padding:10px 17px;border-radius:8px}.tab.active,.tab:hover{background:#48a9e7;color:#04101c}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.field{width:100%;background:#030914;color:#dfe8f5;border:1px solid #27344b;border-radius:8px;padding:14px;outline:none}.field:focus{border-color:#248acb;box-shadow:0 0 0 3px rgba(66,169,234,.08)}
+textarea.field{min-height:300px;resize:vertical;font-family:ui-monospace,monospace;font-size:12px}
+.btn{background:#49a9e8;color:#04111c;border:0;border-radius:8px;padding:12px 17px;font-weight:800}.btn:hover{filter:brightness(1.08)}.btn.secondary{background:#17243a;color:#b8c6da;border:1px solid #2a3a55}.btn.danger{background:#3a171c;color:#ff8a8f;border:1px solid #693039}
+.output{min-height:300px;padding:20px;background:#030914;border:1px solid #27344b;border-radius:8px}
+.muted-center{height:100%;min-height:250px;display:grid;place-items:center;color:#63718a;text-align:center}
+.result h3{margin-top:0}.result-row{display:flex;justify-content:space-between;border-bottom:1px solid #1d293b;padding:11px 0}.result-row:last-child{border-bottom:0}
+.progress{height:7px;background:#172235;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--blue);border-radius:99px}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;font-size:13px}.table th{text-align:left;color:#8f9db2;font-size:11px;letter-spacing:.6px;padding:13px 12px;border-bottom:1px solid #253148}.table td{padding:14px 12px;border-bottom:1px solid #1b2638}.table tr:hover{background:#0d1727}
+.chat{height:560px;display:flex;flex-direction:column}.messages{flex:1;overflow:auto;padding:18px;background:#030914;border:1px solid #26334a;border-radius:9px}.msg{max-width:82%;padding:13px 15px;border-radius:10px;margin:0 0 13px;border:1px solid #25334a;background:#091221;color:#cbd6e6;font-size:13px;line-height:1.55}.msg.user{margin-left:auto;background:#174a70;border-color:#246d9f;color:#eef8ff}.cite{display:block;border-top:1px solid #27344b;margin-top:10px;padding-top:8px;color:#4db5f4;font-size:11px}.chatbar{display:flex;gap:8px;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.statbox{padding:18px}.statnum{font-size:24px;font-weight:800;margin-top:5px}
+.chart{height:210px;display:flex;align-items:end;gap:12px;padding:20px 8px 5px}.bar{flex:1;background:linear-gradient(#3aa9ef,#135a8d);border-radius:5px 5px 0 0;min-width:10px;position:relative}.bar span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10px;color:#8290a5}.bar small{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);color:#66758c;font-size:9px}
+.hidden{display:none!important}
+.alert{padding:12px 14px;border-radius:8px;background:#151f30;border:1px solid #26364f;color:#aebbd0;margin-bottom:12px;font-size:13px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.label{display:block;color:#8e9bb0;font-size:12px;margin:0 0 6px}
+.drop{border:1px dashed #31506c;background:#07101d;border-radius:10px;padding:28px;text-align:center;color:#7f8ea5}.drop input{margin-top:12px}
+.footer{color:#53637b;text-align:center;font-size:11px;margin-top:45px}
+@media(max-width:1000px){.topbar{padding:0 14px}.brand{min-width:auto}.nav{overflow:auto}.grid4{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}main{padding:24px 18px}}
+@media(max-width:650px){.brand b{display:none}.nav button{font-size:12px;padding:9px}.profile{display:none}.grid4,.stats,.formgrid{grid-template-columns:1fr}.page-head{gap:12px}.status{display:none}.event{align-items:flex-start;flex-wrap:wrap}.event .time{margin-left:0}.two{gap:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">♜</div><b>CYBER<span>SOC</span> AI</b></div>
+  <nav class="nav">
+    <button type="button" data-page="dashboard" class="active">▦ Dashboard</button>
+    <button type="button" data-page="triage">› Triage Hub</button>
+    <button type="button" data-page="ioc">⌕ IOC Extractor</button>
+    <button type="button" data-page="assistant">▣ AI Assistant</button>
+    <button type="button" data-page="incidents">▤ Incidents</button>
+    <button type="button" data-page="phishing">✉ Phishing</button>
+    <button type="button" data-page="intel">◈ Threat Intel</button>
+    <button type="button" data-page="analytics">◒ Analytics</button>
+  </nav>
+  <div class="profile">♙ Analyst Tier-2</div>
+</header>
+
+<main>
+<section id="dashboard" class="page">
+  <div class="page-head"><div><h1>SOC Operations Overview</h1><div class="sub">Real-time threat monitoring and system metrics.</div></div><div class="status"><span class="dot"></span>AI Engines Operational</div></div>
+  <div class="grid4">
+    <div class="card kpi"><div class="kpi-top">CRITICAL INCIDENTS <span class="kpi-icon bad">⊘</span></div><div class="kpi-value">3</div><div class="kpi-note bad">+1 since last hour</div></div>
+    <div class="card kpi"><div class="kpi-top">IOCS EXTRACTED <span class="kpi-icon blue">▤</span></div><div class="kpi-value">1,482</div><div class="kpi-note">98.4% auto-classified</div></div>
+    <div class="card kpi"><div class="kpi-top">AVG TRIAGE TIME <span class="kpi-icon warn">◷</span></div><div class="kpi-value">1.2m</div><div class="kpi-note warn">−45% with AI Copilot</div></div>
+    <div class="card kpi"><div class="kpi-top">RAG QUERY PRECISION <span class="kpi-icon good">✓</span></div><div class="kpi-value">99.1%</div><div class="kpi-note good">4 KB Source Mappings</div></div>
+  </div>
+  <div class="card section"><div class="section-title">LIVE SECURITY EVENT FEED</div>
+    <div class="event"><span class="badge critical">CRITICAL</span><span>[Windows Event 4625] Password Spraying attack against Domain Controller</span><span class="time">2 mins ago</span></div>
+    <div class="event"><span class="badge high">HIGH</span><span>[Email Gateway] High-risk phishing URL detected in executive mailbox</span><span class="time">14 mins ago</span></div>
+    <div class="event"><span class="badge medium">MEDIUM</span><span>[Perimeter Firewall] Outbound connection attempt to suspicious TLD (.zip)</span><span class="time">32 mins ago</span></div>
+  </div>
+  <div class="stats">
+    <div class="card statbox"><div class="section-title">SEVERITY MIX</div><div class="result-row"><span>Critical</span><b class="bad">3</b></div><div class="result-row"><span>High</span><b class="warn">9</b></div><div class="result-row"><span>Medium</span><b class="blue">18</b></div></div>
+    <div class="card statbox"><div class="section-title">AI PIPELINE</div><div class="result-row"><span>Log ingestion</span><b class="good">Operational</b></div><div class="result-row"><span>IOC extraction</span><b class="good">Operational</b></div><div class="result-row"><span>RAG retrieval</span><b class="good">Operational</b></div></div>
+    <div class="card statbox"><div class="section-title">TODAY</div><div class="statnum">42</div><div class="sub">events analyzed by SOC copilot</div><div class="progress" style="margin-top:18px"><i style="width:78%"></i></div></div>
+  </div>
+</section>
+
+<section id="triage" class="page hidden">
+  <div class="page-head"><div><h1>Deep Threat Triage Hub</h1><div class="sub">Analyze raw syslog payloads, email headers, and malware sandbox logs.</div></div></div>
+  <div class="toolbar">
+    <button type="button" class="tab active" data-triage="log">Syslog / Event Logs</button><button type="button" class="tab" data-triage="email">Phishing Email Header</button><button type="button" class="tab" data-triage="malware">Malware Sandbox Report</button>
+  </div>
+  <div class="two">
+    <div class="card section"><div class="section-title">RAW INPUT PAYLOAD</div><textarea id="triageInput" class="field" placeholder="Paste security raw logs or reports here..."></textarea><button type="button" class="btn" style="margin-top:14px;width:100%" onclick="runTriage()">›_ Execute AI Triage Analysis</button></div>
+    <div class="card section"><div class="section-title">STRUCTURED ANALYSIS OUTPUT</div><div id="triageOutput" class="output"><div class="muted-center">Paste a payload and click analyze to view structured threats.</div></div></div>
+  </div>
+</section>
+
+<section id="ioc" class="page hidden">
+  <div class="page-head"><div><h1>Automated IOC Extractor</h1><div class="sub">Extract IPv4, IPv6, Domains, URLs, and Hashes with RFC 1918 filtering.</div></div></div>
+  <div class="card section"><textarea id="iocInput" class="field" style="min-height:180px" placeholder="Paste unstructured incident text, threat reports, or firewall dumps..."></textarea><button type="button" class="btn" style="margin-top:14px" onclick="extractIOC()">⌕ Extract & Score Indicators</button></div>
+  <div id="iocOutput" class="card section hidden"><div class="section-title">EXTRACTED INDICATORS</div><div id="iocTable"></div></div>
+</section>
+
+<section id="assistant" class="page hidden">
+  <div class="page-head"><div><h1>▣ RAG-Grounded AI Security Chatbot</h1><div class="sub">Ask security questions and receive explainable, source-aware guidance.</div></div></div>
+  <div class="card section chat">
+    <div id="messages" class="messages">
+      <div class="msg">Greetings Analyst. I am your RAG-grounded SOC Assistant. Ask me about Windows Event IDs, SQL Injection mitigations, firewall logs, IOC analysis, or incident response.<span class="cite">Cited Context Source: [General SOC Knowledge Base]</span></div>
+    </div>
+    <div class="chatbar"><input id="chatInput" class="field" placeholder="Ask a question (e.g., What does Windows Event ID 4625 mean?)" onkeydown="if(event.key==='Enter')sendChat()"><button type="button" class="btn" onclick="sendChat()">➤</button></div>
+  </div>
+</section>
+
+<section id="incidents" class="page hidden">
+  <div class="page-head"><div><h1>Incident Management</h1><div class="sub">Review open security cases and generate executive-ready reports.</div></div><button type="button" class="btn" onclick="addIncident()">＋ New Incident</button></div>
+  <div class="card section table-wrap"><table class="table"><thead><tr><th>INCIDENT TITLE</th><th>SEVERITY</th><th>STATUS</th><th>ASSIGNED TO</th><th>ACTIONS</th></tr></thead><tbody id="incidentBody">
+    <tr><td>Windows Event 4625 Brute-Force Attack</td><td><span class="badge high">HIGH</span></td><td class="blue">INVESTIGATING</td><td>analyst@cybersoc.ai</td><td><button type="button" class="btn secondary" onclick="report('Windows Event 4625 Brute-Force Attack','HIGH')">⇩ Export Report</button></td></tr>
+    <tr><td>Credential Harvesting Email Campaign</td><td><span class="badge critical">CRITICAL</span></td><td class="blue">CONTAINED</td><td>tier2@cybersoc.ai</td><td><button type="button" class="btn secondary" onclick="report('Credential Harvesting Email Campaign','CRITICAL')">⇩ Export Report</button></td></tr>
+  </tbody></table></div>
+</section>
+
+<section id="phishing" class="page hidden">
+  <div class="page-head"><div><h1>Phishing Detector</h1><div class="sub">Analyze suspicious email text, headers, URLs and attachments.</div></div></div>
+  <div class="two">
+    <div class="card section"><div class="section-title">EMAIL / HEADER INPUT</div><textarea id="phishInput" class="field" placeholder="Paste an email, headers, or suspicious message here..."></textarea><button type="button" class="btn" style="margin-top:14px" onclick="scanPhishing()">Analyze Email</button></div>
+    <div class="card section"><div class="section-title">PHISHING ASSESSMENT</div><div id="phishOutput" class="output"><div class="muted-center">Analysis results will appear here.</div></div></div>
+  </div>
+</section>
+
+<section id="intel" class="page hidden">
+  <div class="page-head"><div><h1>Threat Intelligence</h1><div class="sub">Search CVEs, MITRE ATT&CK techniques and OWASP Top 10 knowledge.</div></div></div>
+  <div class="card section"><div class="formgrid"><div><label class="label">INTELLIGENCE TYPE</label><select id="intelType" class="field"><option>CVE</option><option>MITRE ATT&CK</option><option>OWASP Top 10</option></select></div><div><label class="label">QUERY</label><input id="intelQuery" class="field" placeholder="e.g. CVE-2024-3094, T1059, SQL Injection"></div></div><button type="button" class="btn" style="margin-top:14px" onclick="searchIntel()">Search Intelligence</button></div>
+  <div id="intelOutput" class="card section"><div class="section-title">KNOWLEDGE RESULTS</div><div class="alert">Demo knowledge base ready. For live CVE/MITRE/OWASP feeds, connect the backend to trusted threat-intelligence APIs.</div></div>
+</section>
+
+<section id="analytics" class="page hidden">
+  <div class="page-head"><div><h1>Security Analytics</h1><div class="sub">Operational trends across incidents, attacks and indicator sources.</div></div></div>
+  <div class="grid4"><div class="card kpi"><div class="kpi-top">INCIDENTS / 24H</div><div class="kpi-value">42</div><div class="kpi-note">+18% vs previous day</div></div><div class="card kpi"><div class="kpi-top">PHISHING RATE</div><div class="kpi-value">7.8%</div><div class="kpi-note good">−2.1% improved</div></div><div class="card kpi"><div class="kpi-top">TOP ATTACK SOURCE</div><div class="kpi-value" style="font-size:20px">203.0.113.24</div><div class="kpi-note bad">15 events</div></div><div class="card kpi"><div class="kpi-top">AUTO-RESOLUTION</div><div class="kpi-value">64%</div><div class="kpi-note">AI-assisted</div></div></div>
+  <div class="two">
+    <div class="card section"><div class="section-title">DAILY INCIDENTS</div><div class="chart" id="chart"></div></div>
+    <div class="card section"><div class="section-title">ATTACK TYPES</div><div class="result-row"><span>Credential attacks</span><b>34%</b></div><div class="progress"><i style="width:34%"></i></div><div class="result-row"><span>Phishing</span><b>27%</b></div><div class="progress"><i style="width:27%"></i></div><div class="result-row"><span>Malware</span><b>21%</b></div><div class="progress"><i style="width:21%"></i></div><div class="result-row"><span>Web attacks</span><b>18%</b></div><div class="progress"><i style="width:18%"></i></div></div>
+  </div>
+</section>
+
+<div class="footer">CYBERSOC AI • Enterprise SOC Portfolio Interface • Demo mode — connect FastAPI/PostgreSQL/Gemini for production backend services.</div>
+</main>
+</div>
+
+<script>
+const pages=[...document.querySelectorAll('.page')];
+document.querySelectorAll('.nav button').forEach(btn=>{
+  btn.onclick=()=>showPage(btn.dataset.page,btn);
+});
+function showPage(id,btn){
+  pages.forEach(p=>p.classList.toggle('hidden',p.id!==id));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function runTriage(){
+  const input=document.getElementById('triageInput').value.trim(), out=document.getElementById('triageOutput');
+  if(!input){out.innerHTML='<div class="muted-center">Please provide a log or report first.</div>';return}
+  const lower=input.toLowerCase();
+  let severity=lower.includes('failed')||lower.includes('4625')||lower.includes('brute')?'HIGH':lower.includes('malware')||lower.includes('ransom')?'CRITICAL':lower.includes('suspicious')?'MEDIUM':'LOW';
+  let attack=lower.includes('4625')||lower.includes('password')?'Credential Access / Password Attack':lower.includes('sql')?'SQL Injection':lower.includes('powershell')?'Command and Scripting Interpreter':'Suspicious Activity';
+  let confidence=severity==='CRITICAL'?94:severity==='HIGH'?91:severity==='MEDIUM'?82:73;
+  out.innerHTML=`<div class="result"><h3>Structured Threat Assessment <span class="badge ${severity.toLowerCase()}">${severity}</span></h3>
+  <div class="result-row"><span>Detected behavior</span><b>${attack}</b></div>
+  <div class="result-row"><span>AI confidence</span><b class="blue">${confidence}%</b></div>
+  <div class="progress"><i style="width:${confidence}%"></i></div>
+  <div class="result-row"><span>Reasoning summary</span><span style="max-width:60%;text-align:right;color:#aebbd0">Indicators in the payload match known SOC detection patterns and require analyst validation.</span></div>
+  <div class="alert"><b>Recommended action:</b> isolate affected account/host if confirmed, preserve evidence, review correlated authentication/network events, and document the containment decision.</div>
+  <div class="cite">Analysis mode: local demonstration engine • In production, route this request to FastAPI + Gemini/RAG.</div></div>`;
+}
+function extractIOC(){
+  const text=document.getElementById('iocInput').value, box=document.getElementById('iocOutput'), table=document.getElementById('iocTable');
+  if(!text.trim()){box.classList.remove('hidden');table.innerHTML='<div class="alert">Paste incident text first.</div>';return}
+  const ips=[...new Set(text.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g)||[])].filter(x=>!/^10\.|^192\.168\.|^172\.(1[6-9]|2\d|3[01])\./.test(x));
+  const urls=[...new Set(text.match(/https?:\/\/[^\s"'<>]+/gi)||[])];
+  const hashes=[...new Set(text.match(/\b[a-fA-F0-9]{32}\b|\b[a-fA-F0-9]{40}\b|\b[a-fA-F0-9]{64}\b/g)||[])];
+  const domains=[...new Set(text.match(/\b(?:[a-zA-Z0-9-]+\.)+(?:com|net|org|io|ru|xyz|zip|top|info)\b/gi)||[])];
+  const rows=[...ips.map(x=>['IPv4',x]),...domains.map(x=>['Domain',x]),...urls.map(x=>['URL',x]),...hashes.map(x=>['Hash',x])];
+  box.classList.remove('hidden');
+  table.innerHTML=rows.length?`<table class="table"><thead><tr><th>TYPE</th><th>INDICATOR</th><th>CLASSIFICATION</th></tr></thead><tbody>${rows.map(([t,v])=>`<tr><td>${t}</td><td style="font-family:monospace">${esc(v)}</td><td><span class="badge medium">UNKNOWN</span></td></tr>`).join('')}</tbody></table>`:'<div class="alert">No public indicators found. Private RFC1918 IPv4 addresses are filtered.</div>';
+}
+function sendChat(){
+  const input=document.getElementById('chatInput'), q=input.value.trim(); if(!q)return;
+  const box=document.getElementById('messages');
+  box.insertAdjacentHTML('beforeend',`<div class="msg user">${esc(q)}</div>`);
+  let answer='I would correlate the supplied context with endpoint, identity, network and threat-intelligence evidence before making a containment decision.';
+  const l=q.toLowerCase();
+  if(l.includes('4625')) answer='Windows Event ID 4625 represents a failed logon attempt. A burst across multiple accounts or sources can indicate password spraying or brute-force activity. Correlate source IP, target accounts, time window and successful logons before containment.';
+  else if(l.includes('sql injection')) answer='SQL injection occurs when untrusted input changes the structure of a database query. Use parameterized queries, strict input validation, least-privilege database accounts and safe error handling. Test the application with authorized security tooling.';
+  else if(l.includes('phishing')) answer='Treat unexpected credential requests and mismatched links as suspicious. Validate the sender through independent channels, inspect the actual destination URL, quarantine the message and preserve headers for investigation.';
+  box.insertAdjacentHTML('beforeend',`<div class="msg">${answer}<span class="cite">Cited Context Source: [SOC Knowledge Base / General Best Practice]</span></div>`);
+  input.value='';box.scrollTop=box.scrollHeight;
+}
+function scanPhishing(){
+  const text=document.getElementById('phishInput').value.trim(),out=document.getElementById('phishOutput');
+  if(!text){out.innerHTML='<div class="muted-center">Paste an email first.</div>';return}
+  const l=text.toLowerCase(), flags=[];
+  if(/urgent|immediately|verify|suspend|password|login/i.test(l))flags.push('Urgency or credential language');
+  if(/bit\.ly|tinyurl|\.zip|\.xyz|\.top/i.test(l))flags.push('Potentially risky link/domain');
+  if(/attachment|invoice|document|macro/i.test(l))flags.push('Attachment/social-engineering indicator');
+  const score=Math.min(98,35+flags.length*20+(l.includes('password')?10:0));
+  const verdict=score>=70?'PHISHING':'LIKELY SAFE';
+  out.innerHTML=`<div class="result"><h3><span class="badge ${verdict==='PHISHING'?'critical':'low'}">${verdict}</span></h3><div class="result-row"><span>Confidence</span><b class="${score>=70?'bad':'good'}">${score}%</b></div><div class="progress"><i style="width:${score}%"></i></div><h4>Signals</h4>${flags.length?flags.map(x=>`<div class="alert">⚠ ${x}</div>`).join(''):'<div class="alert">No obvious phishing indicators detected by the local ruleset.</div>'}<div class="cite">Demo heuristic engine. Production version should combine header analysis, URL reputation, attachment sandboxing and RAG/LLM review.</div></div>`;
+}
+function searchIntel(){
+  const q=document.getElementById('intelQuery').value.trim(),type=document.getElementById('intelType').value,out=document.getElementById('intelOutput');
+  if(!q){out.innerHTML='<div class="section-title">KNOWLEDGE RESULTS</div><div class="alert">Enter a query first.</div>';return}
+  let text=type==='CVE'?`Lookup requested for ${q}. Review CVSS, affected versions, vendor advisories, exploit status and available mitigations.`:type==='MITRE ATT&CK'?`${q} should be mapped to the relevant ATT&CK tactic/technique, procedure examples and detection opportunities.`:`${q} should be evaluated against the OWASP application-security risk model, with prevention and testing controls documented.`;
+  out.innerHTML=`<div class="section-title">KNOWLEDGE RESULTS</div><div class="alert"><b>${esc(type)}:</b> ${esc(text)}</div><div class="cite">Live intelligence APIs are intentionally not hard-coded into this single-file demo.</div>`;
+}
+function addIncident(){
+  const title=prompt('Incident title:','New Security Investigation'); if(!title)return;
+  document.getElementById('incidentBody').insertAdjacentHTML('afterbegin',`<tr><td>${esc(title)}</td><td><span class="badge medium">MEDIUM</span></td><td class="blue">OPEN</td><td>analyst@cybersoc.ai</td><td><button type="button" class="btn secondary" onclick="report('${esc(title).replace(/'/g,"\\'")}','MEDIUM')">⇩ Export Report</button></td></tr>`);
+}
+function report(title,severity){
+  const reportWindow=window.open('','_blank','width=900,height=700');
+  if(!reportWindow){
+    alert('Please allow pop-ups for CYBERSOC AI to export the incident report.');
+    return;
+  }
+  const now=new Date().toLocaleString();
+  reportWindow.document.write(`<!doctype html><html><head><title>CYBERSOC AI Incident Report</title>
+  <style>
+  body{font-family:Arial,sans-serif;margin:40px;color:#111;line-height:1.5}
+  h1{margin-bottom:4px}.meta{color:#555;margin-bottom:25px}
+  .severity{display:inline-block;padding:5px 10px;border:1px solid #999;border-radius:5px;font-weight:bold}
+  h2{margin-top:28px;border-bottom:1px solid #ddd;padding-bottom:6px}
+  </style></head><body>
+  <h1>CYBERSOC AI — INCIDENT REPORT</h1>
+  <div class="meta">Generated: ${esc(now)}</div>
+  <p><b>Incident:</b> ${esc(title)}</p>
+  <p><b>Severity:</b> <span class="severity">${esc(severity)}</span></p>
+  <p><b>Status:</b> Investigation</p>
+  <h2>Incident Summary</h2>
+  <p>Security event requires analyst validation and evidence correlation.</p>
+  <h2>AI Analysis</h2>
+  <p>Potential malicious activity identified from available telemetry. Correlate identity, endpoint and network evidence before taking containment action.</p>
+  <h2>Recommended Actions</h2>
+  <ol><li>Preserve relevant logs and evidence.</li><li>Correlate identity, endpoint and network telemetry.</li><li>Contain confirmed affected assets.</li><li>Document root cause and recovery steps.</li></ol>
+  <script>window.onload=()=>window.print();<\/script></body></html>`);
+  reportWindow.document.close();
+}
+document.querySelectorAll('[data-triage]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('[data-triage]').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+ document.getElementById('triageInput').placeholder=b.dataset.triage==='email'?'Paste phishing email headers and body here...':b.dataset.triage==='malware'?'Paste malware sandbox report here...':'Paste security raw logs or reports here...';
+});
+const vals=[8,13,9,18,15,24,17,29,22,34,27,42];
+document.getElementById('chart').innerHTML=vals.map((v,i)=>`<div class="bar" style="height:${v*4}px"><span>${v}</span><small>${i+1}</small></div>`).join('');
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const chat=document.getElementById('chatInput');
+  if(chat) chat.addEventListener('keydown',e=>{
+    if(e.key==='Enter' && !e.shiftKey){e.preventDefault();sendChat();}
+  });
+});
+window.addEventListener('error',e=>console.error('CYBERSOC AI UI error:',e.error||e.message));
+</script>
+</body>
+</html>
